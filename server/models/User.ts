@@ -7,4 +7,4 @@ type User = {
   dateCreated: string;
 }
 
-export { User }
+export { type User }

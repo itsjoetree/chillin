@@ -3,38 +3,37 @@ import { type User } from "../../../server/models/User";
 import { ComponentPropsWithoutRef, useState } from "react";
 import { Card } from "./Card";
 import { twMerge } from "tailwind-merge";
-import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
-import { EmojiSmileFill } from "react-bootstrap-icons";
 import { ActionButtons } from "./ActionButtons";
+import { UsernameAvatar } from "./UsernameAvatar";
 
-type FeedCardProps = ComponentPropsWithoutRef<"div"> & { commentsCount: number; post: Post } & Pick<User, "username" | "avatarUrl">
+type FeedCardProps = ComponentPropsWithoutRef<"div"> & { 
+  onLike: () => void;
+  onClickComments: () => void;
+  commentsCount: number;
+  post: Post } & 
+  Pick<User, "username" | "avatarUrl">
 
 const FeedCard = ({
   className,
   username,
   avatarUrl,
   commentsCount,
+  onLike,
   post: { likes, text,  },
 }: FeedCardProps) => {
   const [liked, setLiked] = useState(false);
 
   return (<Card className={twMerge("flex flex-col gap-4", className)}>
-    <div className="flex gap-2 items-center">
-      <Avatar>
-        <AvatarImage src={avatarUrl} />
-        <AvatarFallback>
-          <EmojiSmileFill />
-        </AvatarFallback>
-      </Avatar>
-
-      <span className="truncate">{username}</span>
-    </div>
+    <UsernameAvatar username={username} avatarUrl={avatarUrl} />
 
     {text}
 
     <ActionButtons
-      onClickComments={() => console.log("clicked comments")}
-      onLike={() => setLiked(!liked)}
+      className="self-end"
+      onLike={() => { 
+        setLiked(!liked)
+        onLike()
+      }}
       liked={liked}
       likeCount={likes}
       commentsCount={commentsCount}

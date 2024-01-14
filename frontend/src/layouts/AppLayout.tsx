@@ -1,6 +1,7 @@
 import { Globe, Heart, PersonCircle } from "react-bootstrap-icons";
 import { Logo } from "../components/Logo";
 import { PropsWithChildren } from "react";
+import { Toaster } from "../components/Toaster";
 
 const AppLayout = ({ children }: PropsWithChildren) => (<div className="min-h-dvh flex flex-col sm:flex-row">
   <div className="desktop-sidebar bg-gray-800 min-h-dvh w-60 max-sm:hidden">
@@ -23,6 +24,7 @@ const AppLayout = ({ children }: PropsWithChildren) => (<div className="min-h-dv
     <main className="h-full flex-1 flex flex-col">
       {children}
     </main>
+    <Toaster />
   </div>
 </div>);
 

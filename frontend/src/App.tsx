@@ -4,6 +4,7 @@ import PostView from "./sections/post";
 const App = () => {
 
   return (<AppLayout>
+    {/* <ProfileView /> */}
     <PostView />
   </AppLayout>)
 }

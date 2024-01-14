@@ -6,4 +6,4 @@ type Post = {
   dateCreated: string;
 }
 
-export { Post }
+export { type Post }

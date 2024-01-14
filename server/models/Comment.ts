@@ -6,4 +6,4 @@ type Comment = {
   dateCreated: string;
 };
 
-export { Comment };
+export { type Comment };
