@@ -7,10 +7,11 @@ import { ActionButtons } from "./ActionButtons";
 import { UsernameAvatar } from "./UsernameAvatar";
 
 type FeedCardProps = ComponentPropsWithoutRef<"div"> & { 
+  onDelete?: () => void;
   onLike: () => void;
   onClickComments: () => void;
   commentsCount: number;
-  post: Post } & 
+  post: Post; } & 
   Pick<User, "username" | "avatarUrl">
 
 const FeedCard = ({
@@ -19,6 +20,7 @@ const FeedCard = ({
   avatarUrl,
   commentsCount,
   onLike,
+  onDelete,
   post: { likes, text,  },
 }: FeedCardProps) => {
   const [liked, setLiked] = useState(false);
@@ -29,7 +31,8 @@ const FeedCard = ({
     {text}
 
     <ActionButtons
-      className="self-end"
+      onDelete={onDelete}
+      className="self-end lg:self-start"
       onLike={() => { 
         setLiked(!liked)
         onLike()

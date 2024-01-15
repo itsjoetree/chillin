@@ -46,4 +46,7 @@
   img {
     @apply pointer-events-none select-none;
   }
+  p {
+    @apply leading-8;
+  }
 }
