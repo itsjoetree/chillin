@@ -1,13 +1,15 @@
 import { EmojiSmileFill, YinYang } from "react-bootstrap-icons";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/Avatar";
-import { type Post } from "../../../../server/models/Post";
-import { FeedCard } from "../../components/FeedCard";
-import { useToast } from "../../hooks/useToast";
-import { Button } from "../../components/Button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/Avatar";
+import { type Post } from "server/models/Post";
+import { FeedCard } from "@/components/FeedCard";
+import { useToast } from "@/hooks/useToast";
+import { Button } from "@/components/Button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../components/Dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/Dialog";
+import { useTranslation } from "react-i18next";
 
 const View = () => {
+  const { t } = useTranslation("profile");
   const { toast } = useToast();
   const [following, setFollowing] = useState(false);
 
@@ -35,10 +37,10 @@ const View = () => {
           <DialogTrigger title="Admin" className="cursor-pointer"><YinYang /></DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Admin</DialogTitle>
+              <DialogTitle>{t`admin`}</DialogTitle>
               <DialogDescription className="flex flex-col gap-4 justify-center items-center text-white">
                 <YinYang className="h-5 w-5" />
-                Just vibin, represents a user with admin privileges
+                {t`adminDescription`}
               </DialogDescription>
             </DialogHeader>
           </DialogContent>
@@ -46,7 +48,7 @@ const View = () => {
       </div>
 
       <Button onClick={() => setFollowing(!following)} variant={following ? "secondary" : "default"} className="block justify-self-end">
-        {following ? "Following" : "Follow"}
+        {following ? t`following` : t`follow`}
       </Button>
     </div>
 
@@ -59,12 +61,16 @@ const View = () => {
       <div className="flex gap-2">
         <div className="flex gap-1">
           <span className="text-xs">10</span>
-          <span className="text-xs font-bold">followers</span>
+          <span className="text-xs font-bold">
+            {t`followers`}
+          </span>
         </div>
 
         <div className="flex gap-1">
           <span className="text-xs">10</span>
-          <span className="text-xs font-bold">following</span>
+          <span className="text-xs font-bold">
+            {t`following`}
+          </span>
         </div>
       </div>
     </div>
@@ -72,8 +78,8 @@ const View = () => {
     {
       posts.map((post) => (<FeedCard
         onDelete={() => toast({
-          title: "Post deleted",
-          description: "Your post has been deleted"
+          title: t("deletedTitle", { ns: "post" }),
+          description: t("deletedDescription", { ns: "post" })
         })}
         username="username"
         avatarUrl=""

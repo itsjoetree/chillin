@@ -1,12 +1,12 @@
 import AppLayout from "./layouts/AppLayout";
-import OnboardingView from "./sections/onboarding";
+import ProfileView from "./sections/profile";
 
 const App = () => {
 
   return (<AppLayout>
-    {/* <ProfileView />
-    <PostView /> */}
-    <OnboardingView />
+    <ProfileView />
+    {/* <ProfileView /> */}
+    {/* <OnboardingView /> */}
   </AppLayout>)
 }
 

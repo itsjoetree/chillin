@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './globals.css'
 import { QueryClient, QueryClientProvider } from "react-query";
+import { createClient } from '@supabase/supabase-js';
+import "./i18n";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,6 +16,8 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+export const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_KEY);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -1,39 +1,46 @@
-import { createElement, useEffect, useState } from "react";
-import { Card } from "../../components/Card";
+import { ReactNode, createElement, useEffect, useState } from "react";
+import { Card } from "@/components/Card";
 import { EmojiHeartEyesFill, EmojiKissFill, EmojiSunglassesFill, EmojiWinkFill, Icon } from "react-bootstrap-icons";
 import { twJoin } from "tailwind-merge";
-import { Button } from "../../components/Button";
-import { Input } from "../../components/Input";
-import { Label } from "../../components/Label";
-import { useToast } from "../../hooks/useToast";
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
+import { useToast } from "@/hooks/useToast";
+import { useAuth } from "@/utils/Auth";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { Trans, useTranslation } from "react-i18next";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type SignUpRequest, formSchema } from "server/models/SignUpRequest";
+import { useLocalizeError } from "@/utils/Form";
+import { FormGroup } from "@/components/FormGroup";
+import { Label } from "@/components/Label";
 
 type AppVariant = "chillin" | "cool" | "grounded" | "charismatic";
 const appVariants: AppVariant[] = ["chillin", "cool", "grounded", "charismatic"] as const;
 
-const variantMap: Record<AppVariant, { classList: string; selectedClassList: string; icon: Icon; description: string; }> = {
+const variantMap: Record<AppVariant, { classList: string; selectedClassList: string; icon: Icon; description: ReactNode; }> = {
   chillin: {
     selectedClassList: "border-purple-200 text-gray-800 bg-purple-200",
     classList: "border-purple-200 text-purple-200",
     icon: EmojiHeartEyesFill,
-    description: "You're chillin' like a villain"
+    description: <Trans ns="onboarding" i18nKey="chillinDescription" />
   },
   charismatic: {
     selectedClassList: "border-pink-200 text-gray-800 bg-pink-200",
     classList: "border-pink-200 text-pink-200",
     icon: EmojiKissFill,
-    description: "You're charismatic like cupid"
+    description: <Trans ns="onboarding" i18nKey="charismaticDescription" />
   },
   cool: {
     selectedClassList: "border-blue-200 text-gray-800 bg-blue-200",
     classList: "border-blue-200 text-blue-200",
     icon: EmojiSunglassesFill,
-    description: "You're cool as a cucumber"
+    description: <Trans ns="onboarding" i18nKey="coolDescription" />
   },
   grounded: {
     selectedClassList: "border-green-200 text-gray-800 bg-green-200",
     classList: "border-green-200 text-green-200",
     icon: EmojiWinkFill,
-    description: "You're grounded like a tree"
+    description: <Trans ns="onboarding" i18nKey="groundedDescription" />
   }
 }
 
@@ -44,14 +51,15 @@ type AppVariantCardProps = {
 }
 
 const AppVariantCard = ({ variant, selected, onSelect }: AppVariantCardProps) => {
+  const { t } = useTranslation("onboarding");
   const selectedVariant = variantMap[variant];
 
-  return (<button onClick={() => onSelect?.(variant)} className="block w-full md:w-fit">
+  return (<button type="button" onClick={() => onSelect?.(variant)} className="block w-full md:w-fit">
     <Card className={twJoin("flex flex-col gap-4 items-center justify-center",
       selected ? selectedVariant.selectedClassList : selectedVariant.classList)}>
       <div className="flex flex-col items-center justify-center gap-2">
         {createElement(selectedVariant.icon, { className: "text-2xl" })}
-        <h2 className="text-4xl">{variant}</h2>
+        <h2 className="text-4xl">{t(variant)}</h2>
       </div>
 
       <p>
@@ -62,11 +70,12 @@ const AppVariantCard = ({ variant, selected, onSelect }: AppVariantCardProps) =>
 }
 
 const VariantSelector = ({ selected, onSelect }: Pick<AppVariantCardProps, "onSelect"> & { selected?: AppVariant}) => {
+  const { t } = useTranslation("onboarding");
 
   return (<div className="flex flex-col gap-4">
     <div className="flex flex-col gap-2">
-      <h1 className="text-3xl font-bold">Choose your vibe</h1>
-      <p>Select a theme/accent that will be applied as you navigate the app.</p>
+      <h1 className="text-3xl font-bold">{t`varaintSelectTitle`}</h1>
+      <p>{t`variantSelectDescription`}</p>
     </div>
 
     <div className="flex gap-4 flex-wrap md:items-center md: justify-center">
@@ -85,8 +94,14 @@ const WelcomeView = () => (<div className="flex flex-col items-center justify-ce
   {
     createElement(variantMap.chillin.icon, { className: twJoin("text-6xl", variantMap.chillin.classList)})
   }
-  <h1 className="text-6xl text-center">Welcome to <span className={variantMap.chillin.classList}>chillin!</span></h1>
-  <p className="text-center">A low key media site to connect with some some chill people developed by Joe Salinas</p>
+  <h1 className="text-6xl text-center">
+    <Trans ns="onboarding" i18nKey="welcomeTitle">
+      <span className={variantMap.chillin.classList}></span>
+    </Trans>
+  </h1>
+  <p className="text-center">
+    <Trans ns="onboarding" i18nKey="welcomeDescription" />
+  </p>
 </div>)
 
 type SavedProgress = {
@@ -94,27 +109,47 @@ type SavedProgress = {
   userInfo: { username: string; nickname: string; };
 }
 
-const InfoView = () => (<div className="flex flex-col gap-4">
-  <div className="flex flex-col gap-2">
-    <h1 className="text-3xl font-bold">User information</h1>
-    <p>To finish up your account, lets talk user info</p>
-  </div>
+const InfoView = () => {
+  const { t } = useTranslation("onboarding");
+  const { register, formState: { errors } } = useFormContext<SignUpRequest>();
 
-  <div className="flex flex-col gap-3">
-    <Label htmlFor="username">Username</Label>
-    <Input id="username" placeholder="Username" />
-  </div>
+  return (<div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
+      <h1 className="text-3xl font-bold">{t`userInfoTitle`}</h1>
+      <p>{t`userInfoDescription`}</p>
+    </div>
 
-  <div className="flex flex-col gap-3">
-    <Label htmlFor="nickname">Nickname</Label>
-    <Input id="nickname" placeholder="Nickname" />
-  </div>
+    <FormGroup
+      label={<Label htmlFor="username">{t`username`}</Label>}
+      input={<Input id="username" {...register("username")} />}
+      error={errors.username?.message}
+    />
 
-  <div className="flex flex-col gap-3">
-    <Label htmlFor="birthday">Birthday</Label>
-    <Input style={{ colorScheme: "dark" }} type="date" id="birthday" placeholder="Birthday" />
-  </div>
-</div>)
+    <FormGroup
+      label={<Label htmlFor="nickname">{t`nickname`}</Label>}
+      input={<Input id="nickname" {...register("nickname")} />}
+      error={errors.nickname?.message}
+    />
+
+    <FormGroup
+      label={<Label htmlFor="birthday">{t`birthday`}</Label>}
+      input={<Input style={{ colorScheme: "dark" }} id="birthday" type="date" {...register("birthday")} />}
+      error={errors.birthday?.message}
+    />
+
+    <FormGroup
+      label={<Label htmlFor="email">{t`email`}</Label>}
+      input={<Input id="email" {...register("email")} />}
+      error={errors.email?.message}
+    />
+
+    <FormGroup
+      label={<Label htmlFor="password">{t`password`}</Label>}
+      input={<Input type="password" {...register("password")} />}
+      error={errors.password?.message}
+    />
+  </div>);
+}
 
 /**
  * Obtains saved progress from sessionStorage for the current view
@@ -137,6 +172,12 @@ const useSavedProgress = () => {
 const lastStep = 2;
 
 const View = () => {
+  const { localizeError } = useLocalizeError();
+  const { t } = useTranslation("onboarding");
+
+  const { data: user, isLoading: isAuthLoading } = useAuth();
+
+  const methods = useForm<SignUpRequest>({ resolver: zodResolver(formSchema, { errorMap: localizeError }) });
   const { toast } = useToast();
   const { savedProgress, isLoading } = useSavedProgress();
   const [step, setStep] = useState(0);
@@ -150,36 +191,73 @@ const View = () => {
     }
   }, [savedProgress]);
 
+  // Check user status (temporary until proper auth flow is implemented)
+  useEffect(() => {
+    if (!isLoading && user?.data.user) {
+      toast({
+        title: "Development: Redirecting",
+        description: "Onboarding is only for new users. Redirecting to home page.",
+      })
+    }
+  }, [isLoading, user, toast]);
+
   const onSelectVariant = (variant: AppVariant) => {
     setSelectedVariant(variant);
   }
 
-  const onContinue = () => {
-    if (lastStep === step) {
+  const onSubmit = async (data: SignUpRequest) => {
+    const response = await fetch("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        ...data,
+        variant: selectedVariant
+      })
+    });
+
+    if (response.ok) {
       toast({
-        title: "Welcome to chillin!",
-        description: "Your account has been created!",
+        title: "Account created",
+        description: "Your account has been created. Redirecting to home page.",
       })
     } else {
-      setStep(step + 1);
-
-      if (step > 0)
-        sessionStorage.setItem("onboarding-progress", JSON.stringify({ selectedVariant }));
+      toast({
+        title: "Error",
+        description: "There was an error creating your account. Please try again.",
+      })
     }
   }
 
-  // Don't render while checking save data
-  if (isLoading) return null;
+  const onContinue = async () => {
+    if (lastStep === step)
+      return;
+
+    setStep(step + 1);
+
+    if (step > 0)
+      sessionStorage.setItem("onboarding-progress", JSON.stringify({ selectedVariant }));
+  }
+
+  // Don't render while loading state
+  if (isLoading || isAuthLoading || user?.data.user) return null;
 
   return (<div className="flex flex-col gap-8 px-2 w-full md:items-center md:justify-center py-5">
-    {step === 0 && <WelcomeView />}
-    {step === 1 && <VariantSelector selected={selectedVariant} onSelect={onSelectVariant}  />}
-    {step === 2 && <InfoView />}
+    <Card className="w-full max-w-3xl">
+      <FormProvider {...methods}>
+        <form className="flex flex-col gap-4" onSubmit={methods.handleSubmit(onSubmit)}>
+          {step === 0 && <WelcomeView />}
+          {step === 1 && <VariantSelector selected={selectedVariant} onSelect={onSelectVariant}  />}
+          {step === 2 && <InfoView />}
 
-    <div className="flex gap-2 items-center justify-center w-full">
-      {step > 1 && <Button onClick={() => setStep(step - 1)} variant="secondary">Back</Button>}
-      <Button onClick={onContinue}>{step === 0 ? "Get Started" : "Continue"}</Button>
-    </div>
+          <div className="flex gap-2 items-center justify-center w-full">
+            {step > 1 && <Button type="button" onClick={() => setStep(step - 1)} variant="secondary">{t`back`}</Button>}
+            <Button
+              onClick={step < lastStep ? onContinue : undefined}
+              type={step === lastStep ? "submit" : "button"}
+            >{step === 0 ? t`getStarted` : t`continue`}</Button>
+          </div>
+        </form>
+      </FormProvider>
+    </Card>
   </div>)
 }
 

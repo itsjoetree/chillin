@@ -6,6 +6,7 @@ import { Button } from "./Button";
 import { Textarea } from "./Textarea";
 import { Card } from "./Card";
 import { forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 
 type PostEditorProps = Pick<User, "username" | "avatarUrl"> & {
   /**
@@ -26,6 +27,7 @@ type PostEditorProps = Pick<User, "username" | "avatarUrl"> & {
  * Editor for either a new post or a comment
  */
 const PostEditor = forwardRef<HTMLTextAreaElement, PostEditorProps>(({ username, avatarUrl, onClose, onPost, ...props }, ref) => {
+  const { t } = useTranslation("post");
   const showImageEditor = "selectedImages" in props && "setImages" in props;
 
   return (<div className="px-2 pt-5 pb-2">
@@ -60,12 +62,12 @@ const PostEditor = forwardRef<HTMLTextAreaElement, PostEditorProps>(({ username,
         <Textarea
           ref={ref}
           autoFocus
-          placeholder="What would you like to say?"
+          placeholder={t`newPlaceholder`}
           className="resize-none"
           rows={5}
         />
 
-        <Button onClick={onPost} className="md:self-start">Post</Button>
+        <Button onClick={onPost} className="md:self-start">{t`post`}</Button>
       </div>
     </div>
 
@@ -74,14 +76,14 @@ const PostEditor = forwardRef<HTMLTextAreaElement, PostEditorProps>(({ username,
     </button>
 
     {(showImageEditor && (props.selectedImages?.length ?? 0) > 0) && <div className="flex flex-col gap-4 pl-14 pr-2">
-      <h2 className="text-xl font-semibold">Selected Media</h2>
+      <h2 className="text-xl font-semibold">{t`selectedMedia`}</h2>
       <div className="flex flex-wrap items-center gap-4">
         {
-          props.selectedImages?.map((image, index) => (<Card className="w-full h-full flex items-center relative md:w-44 md:h-64" key={index}>
-            <button onClick={() => props.setImages(props.selectedImages.filter(i => i.id !== image.id))} title="Remove" className="absolute top-2 right-2">
+          props.selectedImages?.map(image => (<Card className="w-full h-full flex items-center relative md:w-44 md:h-64" key={image.id}>
+            <button onClick={() => props.setImages(props.selectedImages.filter(i => i.id !== image.id))} title={t`remove`} className="absolute top-2 right-2">
               <Trash3Fill className="h-4 w-4" />
             </button>
-            <img className="max-h-full w-full" src={image.preview} alt="User uploaded file" />
+            <img className="max-h-full w-full" src={image.preview} alt={t`uploadedImage`} />
           </Card>))
         }
       </div>

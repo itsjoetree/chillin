@@ -1,12 +1,13 @@
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/Avatar";
-import { Comment } from "../../../../server/models/Comment";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/Avatar";
+import { Comment } from "server/models/Comment";
 import { useRef, useState } from "react";
 import { EmojiSmileFill } from "react-bootstrap-icons";
-import { ActionButtons } from "../../components/ActionButtons";
-import { UsernameAvatar } from "../../components/UsernameAvatar";
-import { PostEditor } from "../../components/PostEditor";
-import { SelectedImage } from "../../types";
-import { useToast } from "../../hooks/useToast";
+import { ActionButtons } from "@/components/ActionButtons";
+import { UsernameAvatar } from "@/components/UsernameAvatar";
+import { PostEditor } from "@/components/PostEditor";
+import { SelectedImage } from "@/types";
+import { useToast } from "@/hooks/useToast";
+import { Trans } from "react-i18next";
 
 /**
  * Main view for a post
@@ -85,7 +86,9 @@ const View = () => {
       <div className={showAddComment ? "hidden" : undefined}>
         {comments ? comments.map((comment) => (<div key={comment.id} className="px-2 py-5 flex gap-2 flex-col border-b-purple-200 border-b">
           <UsernameAvatar username={comment.username} avatarUrl="https://github.com/shadcn.png" />
-          <div className="text-sm pl-10 pr-2">{comment.content}</div></div>)) : <div className="px-2 py-5">No comments found</div>}
+          <div className="text-sm pl-10 pr-2">{comment.content}</div></div>)) : (<div className="px-2 py-5">
+            <Trans ns="post" i18nKey="noComments" />
+          </div>)}
       </div>
     </div>
   </>)

@@ -2,6 +2,7 @@ import { ComponentPropsWithoutRef, ReactNode, createElement, isValidElement } fr
 import { ChatDotsFill, Heart, HeartFill, Trash3Fill } from "react-bootstrap-icons";
 import { twMerge } from "tailwind-merge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./AlertDialog";
+import { useTranslation } from "react-i18next";
 
 type ActionButtonsProps = ComponentPropsWithoutRef<"div"> & {
   liked: boolean;
@@ -16,6 +17,8 @@ type ActionButtonsProps = ComponentPropsWithoutRef<"div"> & {
  * Displays action buttons for a post
  */
 const ActionButtons = ({ liked, commentsCount, likeCount, onLike, className, commentsWrapper, onDelete, ...props }: ActionButtonsProps) => {
+  const { t } = useTranslation("post");
+  
   const commentsContent = <span className="flex gap-2 items-center">
     <ChatDotsFill />
     {commentsCount > 0 && <span>{commentsCount}</span>}
@@ -30,30 +33,30 @@ const ActionButtons = ({ liked, commentsCount, likeCount, onLike, className, com
     }
 
     <button className="flex gap-2 items-center" onClick={onLike}>
-      {liked ? <HeartFill title="Unlike" className="text-purple-200" /> : <Heart title="Like" />}
+      {liked ? <HeartFill title={t`unlike`} className="text-purple-200" /> : <Heart title={t`like`} />}
       {likeCount > 0 && <span className="text-sm">{likeCount}</span>}
     </button>
 
     {
       onDelete && (<AlertDialog>
-        <AlertDialogTrigger title="Delete">
+        <AlertDialogTrigger title={t`delete`}>
           <Trash3Fill />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Post?</AlertDialogTitle>
+            <AlertDialogTitle>{t`deleteTitle`}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your post.
+              {t`deleteDescription`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onDelete}>Confirm</AlertDialogAction>
+            <AlertDialogCancel>{t`cancel`}</AlertDialogCancel>
+            <AlertDialogAction onClick={onDelete}>{t`confirm`}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>)
     }
-  </div>)
+  </div>);
 }
 
 export { ActionButtons }
