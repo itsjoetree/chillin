@@ -26,6 +26,7 @@ const translations = {
       delete: "Delete",
       remove: "Remove",
       getStarted: "Get Started",
+      signIn: "Sign In",
 
       // Variants
       chillin: "Chillin'",

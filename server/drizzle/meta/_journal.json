@@ -1,0 +1,41 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1705890193165,
+      "tag": "0000_worthless_speedball",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1705893062661,
+      "tag": "0001_workable_the_twelve",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1705967215906,
+      "tag": "0002_lean_lady_bullseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1705973941899,
+      "tag": "0003_solid_dragon_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1705974039574,
+      "tag": "0004_mature_lyja",
+      "breakpoints": true
+    }
+  ]
+}

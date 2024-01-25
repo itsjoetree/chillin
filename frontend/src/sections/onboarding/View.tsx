@@ -5,7 +5,6 @@ import { twJoin } from "tailwind-merge";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useToast } from "@/hooks/useToast";
-import { useAuth } from "@/utils/Auth";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,6 +12,7 @@ import { type SignUpRequest, formSchema } from "server/models/SignUpRequest";
 import { useLocalizeError } from "@/utils/Form";
 import { FormGroup } from "@/components/FormGroup";
 import { Label } from "@/components/Label";
+import { useAuth } from "@/hooks/useAuth";
 
 type AppVariant = "chillin" | "cool" | "grounded" | "charismatic";
 const appVariants: AppVariant[] = ["chillin", "cool", "grounded", "charismatic"] as const;
@@ -172,10 +172,9 @@ const useSavedProgress = () => {
 const lastStep = 2;
 
 const View = () => {
+  const { profile, loading, signUp } = useAuth();
   const { localizeError } = useLocalizeError();
   const { t } = useTranslation("onboarding");
-
-  const { data: user, isLoading: isAuthLoading } = useAuth();
 
   const methods = useForm<SignUpRequest>({ resolver: zodResolver(formSchema, { errorMap: localizeError }) });
   const { toast } = useToast();
@@ -191,35 +190,22 @@ const View = () => {
     }
   }, [savedProgress]);
 
-  // Check user status (temporary until proper auth flow is implemented)
-  useEffect(() => {
-    if (!isLoading && user?.data.user) {
-      toast({
-        title: "Development: Redirecting",
-        description: "Onboarding is only for new users. Redirecting to home page.",
-      })
-    }
-  }, [isLoading, user, toast]);
-
   const onSelectVariant = (variant: AppVariant) => {
     setSelectedVariant(variant);
   }
 
   const onSubmit = async (data: SignUpRequest) => {
-    const response = await fetch("/api/auth/signup", {
-      method: "POST",
-      body: JSON.stringify({
+    try {
+      await signUp({
         ...data,
-        variant: selectedVariant
-      })
-    });
+        siteVariant: selectedVariant!
+      });
 
-    if (response.ok) {
       toast({
         title: "Account created",
         description: "Your account has been created. Redirecting to home page.",
-      })
-    } else {
+      });
+    } catch {
       toast({
         title: "Error",
         description: "There was an error creating your account. Please try again.",
@@ -238,7 +224,10 @@ const View = () => {
   }
 
   // Don't render while loading state
-  if (isLoading || isAuthLoading || user?.data.user) return null;
+  if (profile)
+    console.log(profile);
+
+  if (isLoading || loading || profile) return null;
 
   return (<div className="flex flex-col gap-8 px-2 w-full md:items-center md:justify-center py-5">
     <Card className="w-full max-w-3xl">

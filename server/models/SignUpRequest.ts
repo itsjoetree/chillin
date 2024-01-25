@@ -6,6 +6,7 @@ export type SignUpRequest = {
   birthday: string;
   password: string;
   email: string;
+  siteVariant: "chillin" | "charismatic" | "grounded" | "cool";
 }
 
 // Backend schema
@@ -15,4 +16,5 @@ export const formSchema = z.object({
   birthday: z.string().refine(value => !isNaN(Date.parse(value))),
   password: z.string().min(8),
   email: z.string().email().max(254),
+  siteVariant: z.enum(["chillin", "charismatic", "grounded", "cool"]).default("chillin"),
 });
