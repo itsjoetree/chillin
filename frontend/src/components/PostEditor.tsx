@@ -1,5 +1,5 @@
 import { ArrowLeftCircleFill, ImageFill, Trash3Fill } from "react-bootstrap-icons";
-import { User } from "../../../server/models/User";
+import { Profile } from "server/schema/profile";
 import { UsernameAvatar } from "./UsernameAvatar";
 import { SelectedImage } from "../types";
 import { Button } from "./Button";
@@ -8,7 +8,7 @@ import { Card } from "./Card";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 
-type PostEditorProps = Pick<User, "username" | "avatarUrl"> & {
+type PostEditorProps = Pick<Profile, "username" | "avatarUrl"> & {
   /**
    * Ref to the Textarea component
    */

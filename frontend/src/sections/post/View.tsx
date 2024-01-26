@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/Avatar";
-import { Comment } from "server/models/Comment";
+import { type Comment } from "server/schema/comment";
 import { useRef, useState } from "react";
 import { EmojiSmileFill } from "react-bootstrap-icons";
 import { ActionButtons } from "@/components/ActionButtons";
@@ -21,11 +21,12 @@ const View = () => {
 
   const comments: Comment[] = 
       Array.from({ length: 35 }, (_, i): Comment => ({
-        id: i.toString(),
-        authorId: i.toString(),
-        username: "username",
+        id: i,
+        authorId: i,
         content: "Once upon a time there was a dev who was craving some tiramisu",
         dateCreated: "",
+        updatedAt: "",
+        postId: 0
       }));
 
   const onToggleComment = (toggle: boolean) => {
@@ -85,7 +86,7 @@ const View = () => {
 
       <div className={showAddComment ? "hidden" : undefined}>
         {comments ? comments.map((comment) => (<div key={comment.id} className="px-2 py-5 flex gap-2 flex-col border-b-purple-200 border-b">
-          <UsernameAvatar username={comment.username} avatarUrl="https://github.com/shadcn.png" />
+          <UsernameAvatar username="username" avatarUrl="https://github.com/shadcn.png" />
           <div className="text-sm pl-10 pr-2">{comment.content}</div></div>)) : (<div className="px-2 py-5">
             <Trans ns="post" i18nKey="noComments" />
           </div>)}

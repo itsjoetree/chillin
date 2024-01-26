@@ -1,15 +1,16 @@
 import Elysia from "elysia";
 import { getProfile } from "../libs/getProfile";
 import { Post, post } from "../schema/post";
-import { db } from "../src";
-import { count, gt, eq } from "drizzle-orm";
+import { count, gt, eq, and } from "drizzle-orm";
 import { likedPost } from "../schema/likedPost";
 import { comment } from "../schema/comment";
 import { followRelationship } from "../schema/followRelationship";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export const feeds = new Elysia({ prefix: "/api/feed" })
+export const feeds = (db: PostgresJsDatabase, supabase: SupabaseClient) => new Elysia({ prefix: "/api/feed" })
   .get("", async (req): Promise<Post[]> => {
-    const currentProfile = await getProfile(req.headers);
+    const currentProfile = await getProfile(db, supabase, req.headers);
 
     const cursor = req.query["cursor"] ? Number(req.query["cursor"]) : undefined;
     const take = Number(req.query["take"] ?? 10);
@@ -33,7 +34,10 @@ export const feeds = new Elysia({ prefix: "/api/feed" })
       .groupBy(post.id);
 
     if (cursor)
-      postsQuery.where(gt(post.id, cursor) && eq(followRelationship.followerId, currentProfile.id));
+      postsQuery.where(and(
+       gt(post.id, cursor),
+       eq(followRelationship.followerId, currentProfile.id))
+      );
     else
       postsQuery.where(eq(followRelationship.followerId, currentProfile.id));
 

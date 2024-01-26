@@ -1,11 +1,13 @@
 import Elysia from "elysia";
 import { formSchema as signInSchema } from "../models/SignInRequest";
 import { formSchema as signUpSchema } from "../models/SignUpRequest";
-import { AuthToken, db, supabase } from "../src";
+import { AuthToken } from "../models/AuthToken";
 import { profile } from "../schema/profile";
 import { eq } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export const auth = new Elysia({ prefix: "/api/auth" })
+export const auth = (db: PostgresJsDatabase, supabase: SupabaseClient) => new Elysia({ prefix: "/api/auth" })
   .post("/sign-in", async (req): Promise<AuthToken> => {
     const body = signInSchema.parse(JSON.parse(String(req.body)));
 

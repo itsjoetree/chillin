@@ -1,6 +1,6 @@
 import { EmojiSmileFill, YinYang } from "react-bootstrap-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/Avatar";
-import { type Post } from "server/models/Post";
+import { type Post } from "server/schema/post";
 import { FeedCard } from "@/components/FeedCard";
 import { useToast } from "@/hooks/useToast";
 import { Button } from "@/components/Button";
@@ -14,11 +14,14 @@ const View = () => {
   const [following, setFollowing] = useState(false);
 
   const posts: Post[] = Array.from({ length: 10 }, (_, i): Post => ({
-    id: i.toString(),
-    authorId: i.toString(),
+    id: i,
+    authorId: i,
     likes: 10,
     text: "Once upon a time there was a dev who was craving some tiramisu",
     dateCreated: "",
+    updatedAt: "",
+    seen: false,
+    commentCount: 10
   }));
 
   return (<div className="flex flex-col gap-4 py-5 px-2">

@@ -1,13 +1,14 @@
 import Elysia from "elysia";
 import { getProfile } from "../libs/getProfile";
-import { db } from "../src";
 import { profile } from "../schema/profile";
 import { followRelationship } from "../schema/followRelationship";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export const users = new Elysia({ prefix: "/api/user" })
+export const users = (db: PostgresJsDatabase, supabase: SupabaseClient) => new Elysia({ prefix: "/api/user" })
   .post("/:username/follow", async (req) => {
-    const currentProfile = await getProfile(req.headers);
+    const currentProfile = await getProfile(db, supabase, req.headers);
 
     const followeeUsername = req.params.username;
 
@@ -25,7 +26,7 @@ export const users = new Elysia({ prefix: "/api/user" })
     });
   })
   .delete("/:username/unfollow", async (req) => {
-    const currentProfile = await getProfile(req.headers);
+    const currentProfile = await getProfile(db, supabase, req.headers);
 
     const followeeUsername = req.params.username;
 
@@ -40,8 +41,8 @@ export const users = new Elysia({ prefix: "/api/user" })
     const relationship = await db
       .select()
       .from(followRelationship)
-      .where(eq(followRelationship.followerId, currentProfile.id) && 
-        eq(followRelationship.followeeId, followee[0].id));
+      .where(and(eq(followRelationship.followerId, currentProfile.id),
+        eq(followRelationship.followeeId, followee[0].id)));
 
     await db.delete(followRelationship).where(eq(followRelationship.id, relationship[0].id));
   })

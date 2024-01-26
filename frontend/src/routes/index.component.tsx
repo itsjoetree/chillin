@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { EnvelopeSlashFill, Icon } from "react-bootstrap-icons";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
-import { Post } from "server/models/Post";
+import { type Post } from "server/schema/post";
 
 type DisplayMessageProps = {
   icon: Icon;

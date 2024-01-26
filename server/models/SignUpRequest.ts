@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export type SignUpRequest = {
   username: string;
-  nickname: string;
+  nickname?: string;
   birthday: string;
   password: string;
   email: string;

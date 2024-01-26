@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { InferSelectModel } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { pgTable, serial, text, date, uuid, pgEnum } from "drizzle-orm/pg-core";
 
 export const siteVariantEnum = pgEnum("site_variant", ["chillin", "charismatic", "grounded", "cool"]);
@@ -25,4 +25,4 @@ export const profileSchema = z.object({
 });
 
 export type Profile = InferSelectModel<typeof profile>;
-export type ProfileBody = Omit<Profile, "id" | "userId" | "updatedAt" | "role" | "email">;
+export type ProfileRequest = Omit<InferInsertModel<typeof profile>, "id" | "userId" | "updatedAt" | "role" | "email" | "avatarUrl">;

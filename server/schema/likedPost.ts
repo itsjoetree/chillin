@@ -4,6 +4,6 @@ import { profile } from "./profile";
 
 export const likedPost = pgTable("liked_post", {
   id: serial("id").primaryKey(),
-  postId: integer("post_id").references(() => post.id).notNull(),
+  postId: integer("post_id").references(() => post.id, { onDelete: "cascade" }).notNull(),
   profileId: integer("profile_id").references(() => profile.id).notNull()
 });

@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from "react-query";
 import { supabase } from "../main";
 import { ReactNode, createContext, useCallback, useMemo } from "react";
-import { Profile } from "server/models/Profile";
-import { AuthToken } from "server/src";
+import { Profile } from "server/schema/profile";
+import { AuthToken } from "server/models/AuthToken";
 import { type SignUpRequest } from "server/models/SignUpRequest";
 import { type SignInRequest } from "server/models/SignInRequest";
 

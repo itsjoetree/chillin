@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import { cors } from "@elysiajs/cors";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { AuthSession, createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { users } from "../controllers/users";
 import { auth } from "../controllers/auth";
 import { posts } from "../controllers/posts";
@@ -13,17 +13,16 @@ import postgres from "postgres";
 const connectionString = process.env.DATABASE_URL!;
 const client = postgres(connectionString, { prepare: false });
 export const db = drizzle(client);
-export type AuthToken = Pick<AuthSession, "access_token" | "refresh_token">;
 export const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 const app = new Elysia()
   .use(swagger())
   .use(cors())
-  .use(auth)
-  .use(users)
-  .use(posts)
-  .use(profiles)
-  .use(feeds)
+  .use(auth(db, supabase))
+  .use(users(db, supabase))
+  .use(posts(db, supabase))
+  .use(profiles(db, supabase))
+  .use(feeds(db, supabase))
   .listen(3000);
 
 console.log(

@@ -36,6 +36,20 @@
       "when": 1705974039574,
       "tag": "0004_mature_lyja",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1706229456501,
+      "tag": "0005_wandering_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1706298895215,
+      "tag": "0006_mean_ultimates",
+      "breakpoints": true
     }
   ]
 }

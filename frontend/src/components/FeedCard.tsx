@@ -1,5 +1,5 @@
-import { type Post } from "../../../server/models/Post";
-import { type User } from "../../../server/models/User";
+import { type Post } from "server/schema/post";
+import { type Profile } from "server/schema/profile";
 import { ComponentPropsWithoutRef, useState } from "react";
 import { Card } from "./Card";
 import { twMerge } from "tailwind-merge";
@@ -12,7 +12,7 @@ type FeedCardProps = ComponentPropsWithoutRef<"div"> & {
   onClickComments: () => void;
   commentsCount: number;
   post: Post; } & 
-  Pick<User, "username" | "avatarUrl">
+  Pick<Profile, "username" | "avatarUrl">
 
 const FeedCard = ({
   className,

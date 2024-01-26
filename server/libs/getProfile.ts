@@ -1,11 +1,12 @@
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { Profile, profile } from "../schema/profile";
-import { db, supabase } from "../src";
 import { eq } from "drizzle-orm";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Obtains profile by looking at user's token
  */
-export const getProfile = async (headers: Record<string, string | undefined>): Promise<Profile> => {
+export const getProfile = async (db: PostgresJsDatabase, supabase: SupabaseClient, headers: Record<string, string | undefined>): Promise<Profile> => {
   const token = headers["authorization"]?.split(" ")[1];
   if (!token) throw new Error("Unauthorized");
 
