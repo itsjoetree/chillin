@@ -9,6 +9,7 @@ export const profile = pgTable("profiles", {
   id: serial("id").primaryKey(),
   userId: uuid("user_id"),
   avatarUrl: text("avatar_url"),
+  bio: text("bio"),
   username: text("username"),
   nickname: text("nickname"),
   birthday: date("birthday"),
@@ -25,4 +26,5 @@ export const profileSchema = z.object({
 });
 
 export type Profile = InferSelectModel<typeof profile>;
-export type ProfileRequest = Omit<InferInsertModel<typeof profile>, "id" | "userId" | "updatedAt" | "role" | "email" | "avatarUrl">;
+export type ProfileView = Omit<InferSelectModel<typeof profile>, "userId" | "id"> & { followerCount: number, followingCount: number };
+export type ProfileRequestBody = Omit<InferInsertModel<typeof profile>, "id" | "userId" | "updatedAt" | "role" | "email" | "avatarUrl">;

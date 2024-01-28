@@ -5,6 +5,6 @@ import { comment } from "./comment";
 export const likedComment = pgTable("liked_comment", {
   id: serial("id").primaryKey(),
   commentId: integer("comment_id").references(() => comment.id, { onDelete: "cascade" }).notNull(),
-  profileId: integer("profile_id").references(() => profile.id).notNull(),
+  profileId: integer("profile_id").references(() => profile.id, { onDelete: "cascade" }).notNull(),
   updatedAt: date("updated_at")
 });

@@ -6,6 +6,7 @@ import { profile } from "../schema/profile";
 import { eq } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { parseISO, startOfDay, subYears } from "date-fns";
 
 export const auth = (db: PostgresJsDatabase, supabase: SupabaseClient) => new Elysia({ prefix: "/api/auth" })
   .post("/sign-in", async (req): Promise<AuthToken> => {
@@ -30,23 +31,22 @@ export const auth = (db: PostgresJsDatabase, supabase: SupabaseClient) => new El
 
     const { data, error } = await supabase.auth.signUp({
       email: body.email,
-      password: body.password,
-      options: {
-        data: {
-          username: body.username,
-          nickname: body.nickname,
-          site_variant: body.siteVariant,
-          birthday: body.birthday
-        }
-      }
+      password: body.password
     });
 
     if (error || !data?.session || !data?.user)
-      throw new Error(error?.message ?? "Unable to sign up");
+      throw new Error("SignUpFailed");
 
+    const birthdayDate = parseISO(body.birthday);
+    const today = startOfDay(new Date());
+    const eighteenYearsAgo = subYears(today, 18);
+
+    if (birthdayDate > eighteenYearsAgo)
+      throw new Error("AgeVerificationFailed");
+    
     await db.update(profile)
       .set({
-        username: body.username,
+        username: body.username.replace(/[^a-zA-Z0-9]/g, "").trim().toLowerCase(),
         nickname: body.nickname,
         siteVariant: body.siteVariant,
         birthday: body.birthday

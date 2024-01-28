@@ -16,8 +16,18 @@ export const db = drizzle(client);
 export const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 const app = new Elysia()
-  .use(swagger())
-  .use(cors())
+  .use(swagger({
+    documentation: {
+      info: {
+          title: "chillin",
+          version: "0.0.1",
+          description: "API documentation for chillin"
+      }
+  }
+  }))
+  .use(cors({
+    allowedHeaders: ["Content-Type", "Authorization"]
+  }))
   .use(auth(db, supabase))
   .use(users(db, supabase))
   .use(posts(db, supabase))
@@ -25,8 +35,8 @@ const app = new Elysia()
   .use(feeds(db, supabase))
   .listen(3000);
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+export type Api = typeof app;
 
-//app.handle(new Request("http://localhost/")).then(console.log)
+console.log(
+  `chillin is running at ${app.server?.hostname}:${app.server?.port}`
+);

@@ -8,6 +8,7 @@ import { edenFetch } from "@elysiajs/eden";
 import { auth } from "../controllers/auth";
 import { users } from "../controllers/users";
 import { posts } from "../controllers/posts";
+import { feeds } from "../controllers/feeds";
 import Elysia from "elysia";
 import postgres from "postgres";
 
@@ -27,6 +28,7 @@ const app = new Elysia()
   .use(profiles(db, supabase))
   .use(users(db, supabase))
   .use(posts(db, supabase))
+  .use(feeds(db, supabase))
   .listen(3000);
 
 export const testFetch = edenFetch<typeof app>("http://localhost:3000");

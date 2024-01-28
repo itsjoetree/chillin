@@ -1,6 +1,6 @@
 import { type Post } from "server/schema/post";
 import { type Profile } from "server/schema/profile";
-import { ComponentPropsWithoutRef, useState } from "react";
+import { ComponentPropsWithoutRef } from "react";
 import { Card } from "./Card";
 import { twMerge } from "tailwind-merge";
 import { ActionButtons } from "./ActionButtons";
@@ -10,7 +10,7 @@ type FeedCardProps = ComponentPropsWithoutRef<"div"> & {
   onDelete?: () => void;
   onLike: () => void;
   onClickComments: () => void;
-  commentsCount: number;
+  viewerLiked?: boolean;
   post: Post; } & 
   Pick<Profile, "username" | "avatarUrl">
 
@@ -18,12 +18,11 @@ const FeedCard = ({
   className,
   username,
   avatarUrl,
-  commentsCount,
+  viewerLiked,
   onLike,
   onDelete,
-  post: { likes, text,  },
+  post: { likes, text, commentCount  },
 }: FeedCardProps) => {
-  const [liked, setLiked] = useState(false);
 
   return (<Card className={twMerge("flex flex-col gap-4", className)}>
     <UsernameAvatar username={username} avatarUrl={avatarUrl} />
@@ -31,15 +30,12 @@ const FeedCard = ({
     {text}
 
     <ActionButtons
+      liked={!!viewerLiked}
       onDelete={onDelete}
+      onLike={onLike}
       className="self-end lg:self-start"
-      onLike={() => { 
-        setLiked(!liked)
-        onLike()
-      }}
-      liked={liked}
       likeCount={likes}
-      commentsCount={commentsCount}
+      commentsCount={commentCount}
     />
   </Card>);
 }

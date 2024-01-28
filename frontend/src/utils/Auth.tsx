@@ -1,12 +1,12 @@
 import { useQuery, useQueryClient } from "react-query";
-import { supabase } from "../main";
+import { clientApi, getHeaders, supabase } from "../main";
 import { ReactNode, createContext, useCallback, useMemo } from "react";
 import { Profile } from "server/schema/profile";
 import { AuthToken } from "server/models/AuthToken";
 import { type SignUpRequest } from "server/models/SignUpRequest";
 import { type SignInRequest } from "server/models/SignInRequest";
 
-type AuthContextType = {
+export type AuthContextType = {
   profile?: Profile;
   refreshProfile: () => void;
   signUp: (payload: SignUpRequest) => Promise<void>;
@@ -26,20 +26,16 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading, isRefetching } = useQuery("auth-user", async (): Promise<Profile | undefined> => {
-    const { data, error } =  await supabase.auth.getSession();
+  const { data: profile, isLoading } = useQuery("auth-user", async (): Promise<Profile | undefined> => {
+    const headers = await getHeaders();
 
-    if (error || !data || !data.session) return;
-
-    const profileResponse = await fetch("/api/profile", {
-      headers: {
-        "Authorization": `Bearer ${data.session?.access_token}`
-      }
+    const profileResponse = await clientApi.api.profile.get({
+      $headers: headers
     })
 
-    if (!profileResponse.ok) return;
+    if (profileResponse.error) return;
 
-    return await profileResponse.json();
+    return profileResponse.data;
   });
 
   const refreshProfile = useCallback(async () => {
@@ -79,8 +75,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await supabase.auth.signOut();
       await refreshProfile();
     },
-    loading: isLoading || isRefetching
-  }), [profile, isLoading, isRefetching, refreshProfile]);
+    loading: isLoading
+  }), [profile, isLoading, refreshProfile]);
 
   return (<AuthContext.Provider value={provider}>
     {children}

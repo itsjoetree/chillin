@@ -28,7 +28,7 @@ export const feeds = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
       })
       .from(post)
       .limit(take)
-      .leftJoin(followRelationship, eq(post.authorId, followRelationship.followeeId))
+      .innerJoin(followRelationship, eq(post.authorId, followRelationship.followeeId))
       .leftJoin(likedPost, eq(post.id, likedPost.postId))
       .leftJoin(comment, eq(post.id, comment.postId))
       .groupBy(post.id);

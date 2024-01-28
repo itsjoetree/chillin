@@ -223,10 +223,6 @@ const View = () => {
       sessionStorage.setItem("onboarding-progress", JSON.stringify({ selectedVariant }));
   }
 
-  // Don't render while loading state
-  if (profile)
-    console.log(profile);
-
   if (isLoading || loading || profile) return null;
 
   return (<div className="flex flex-col gap-8 px-2 w-full md:items-center md:justify-center py-5">

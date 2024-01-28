@@ -3,7 +3,7 @@ import { SignUpRequest } from "../models/SignUpRequest";
 import { profile } from "../schema/profile";
 import { and, eq } from "drizzle-orm";
 import { adminSupabase, db, supabase, testFetch } from "./setup";
-import { PostBody, post } from "../schema/post";
+import { PostRequestBody, post } from "../schema/post";
 import { getProfile } from "../libs/getProfile";
 import { CommentRequestBody, comment } from "../schema/comment";
 import { likedPost } from "../schema/likedPost";
@@ -26,7 +26,7 @@ let comment_id = 0;
 let reply_comment_id = 0;
 const headers = { authorization: `Bearer ${accessToken}` };
 
-const postBody: PostBody = {
+const postBody: PostRequestBody = {
   text: "This is a test post!"
 }
 
@@ -193,32 +193,32 @@ describe("posts", () => {
     expect(replyResult[0]?.content).toBe(replyBody.content);
   });
 
-  // test("deletes reply to comment", async () => {
-  //   const replyBody: CommentRequestBody = {
-  //     content: "This is a test reply!"
-  //   };
+  test("deletes reply to comment", async () => {
+    const replyBody: CommentRequestBody = {
+      content: "This is a test reply!"
+    };
 
-  //   await testFetch("/api/post/:postId/comments/:commentId/:replyId", {
-  //     params: {
-  //       replyId: reply_comment_id.toString(),
-  //       postId: post_id.toString(),
-  //       commentId: comment_id.toString()
-  //     },
-  //     method: "DELETE",
-  //     body: JSON.stringify(replyBody),
-  //     headers
-  //   });
+    await testFetch("/api/post/:postId/comments/:commentId/:replyId", {
+      params: {
+        replyId: reply_comment_id.toString(),
+        postId: post_id.toString(),
+        commentId: comment_id.toString()
+      },
+      method: "DELETE",
+      body: JSON.stringify(replyBody),
+      headers
+    });
 
-  //   const userProfile = await getProfile(db, supabase, headers);
+    const userProfile = await getProfile(db, supabase, headers);
 
-  //   const replyResult = await db.select().from(replyComment)
-  //     .where(and(
-  //       eq(replyComment.authorId, userProfile.id),
-  //       eq(replyComment.commentId, comment_id)
-  //     ));
+    const replyResult = await db.select().from(replyComment)
+      .where(and(
+        eq(replyComment.authorId, userProfile.id),
+        eq(replyComment.commentId, comment_id)
+      ));
 
-  //   expect(replyResult).toBeEmpty();
-  // });
+    expect(replyResult).toBeEmpty();
+  });
 
   test("deletes comment", async () => {
     await testFetch("/api/post/:postId/comments/:commentId", {

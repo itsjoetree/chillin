@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import { comment, commentSchema } from "../schema/comment";
 import { getProfile } from "../libs/getProfile";
-import { count, eq, gt, and } from "drizzle-orm";
+import { count, eq, gt, and, exists, SQL } from "drizzle-orm";
 import { replyComment } from "../schema/replyComment";
 import { Post, post, postSchema } from "../schema/post";
 import { likedPost } from "../schema/likedPost";
@@ -12,12 +12,11 @@ import { likedComment } from "../schema/likedComment";
 
 export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new Elysia({ prefix: "/api/post" })
   .get("", async (req): Promise<Post[]> => {
-    await getProfile(db, supabase, req.headers);
+    const currentProfile = await getProfile(db, supabase, req.headers);
 
     const cursor = req.query["cursor"] ? Number(req.query["cursor"]) : undefined;
     const take = Number(req.query["take"] ?? 10);
     const username = String(req.query["username"]);
-
     // lookup user
     const user = await db.select().from(profile).where(eq(profile.username, username));
     const postsQuery = db
@@ -29,19 +28,25 @@ export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
         updatedAt: post.updatedAt,
         seen: post.seen,
         likes: count(likedPost.id),
-        commentCount: count(comment.id)
+        commentCount: count(comment.id),
+        likedByViewer: exists(
+          db.select().from(likedPost).where(and(
+            eq(likedPost.postId, post.id),
+            eq(likedPost.profileId, currentProfile.id)
+          ))
+        ) as SQL<boolean>
       })
       .from(post)
+      .limit(take)
       .leftJoin(likedPost, eq(post.id, likedPost.postId))
-      .leftJoin(comment, eq(post.id, comment.postId))
-      .limit(take);
+      .leftJoin(comment, eq(post.id, comment.postId));
     
     if (cursor)
       postsQuery.where(and(gt(post.id, cursor), eq(post.authorId, user[0].id)));
     else
       postsQuery.where(eq(post.authorId, user[0].id));
 
-    return await postsQuery;
+    return await postsQuery.groupBy(post.id);;
   })
   .get("/:postId", async (req): Promise<Post> => {
     const postId = Number(req.params["postId"]);

@@ -32,7 +32,7 @@ const ActionButtons = ({ liked, commentsCount, likeCount, onLike, className, com
       }, commentsContent) : commentsContent
     }
 
-    <button className="flex gap-2 items-center" onClick={onLike}>
+    <button type="button" className="flex gap-2 items-center" onClick={onLike}>
       {liked ? <HeartFill title={t`unlike`} className="text-purple-200" /> : <Heart title={t`like`} />}
       {likeCount > 0 && <span className="text-sm">{likeCount}</span>}
     </button>

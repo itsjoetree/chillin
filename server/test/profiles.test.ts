@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { SignUpRequest } from "../models/SignUpRequest";
-import { ProfileRequest, profile } from "../schema/profile";
+import { ProfileRequestBody, profile } from "../schema/profile";
 import { eq } from "drizzle-orm";
 import { adminSupabase, db, supabase, testFetch } from "./setup";
 
@@ -50,7 +50,7 @@ describe("profile", () => {
   });
 
   test("updates profile", async () => {
-    const updatePayload: ProfileRequest = {
+    const updatePayload: ProfileRequestBody = {
       username: "newProfileUsername",
       nickname: "newProfileNickname",
       siteVariant: "cool"
