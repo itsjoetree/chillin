@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./globals.css";
 import "./i18n";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createClient } from '@supabase/supabase-js';
 import { AuthProvider } from "./utils/Auth.tsx";
 import { edenTreaty } from '@elysiajs/eden'
@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
 });
 
 // export const clientApi = edenTreaty<Api>("http://localhost:3000");
-export const clientApi = edenTreaty<Api>("http://192.168.86.231:5050");
+export const clientApi = edenTreaty<Api>("http://192.168.86.249:5050");
 export const getHeaders = async () => {
   const { data } =  await supabase.auth.getSession();
 

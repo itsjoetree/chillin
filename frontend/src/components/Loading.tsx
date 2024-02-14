@@ -6,7 +6,7 @@ export const Loading = () => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setShow(true), 2000);
+    setTimeout(() => setShow(true), 1250);
   }, []);
  
   return (<EmojiHeartEyesFill className={twJoin("h-10 w-10 opacity-0", show && "animate-pulse")} />)

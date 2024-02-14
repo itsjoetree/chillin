@@ -9,6 +9,7 @@ import { Route as NewPostImport } from './routes/new-post'
 import { Route as UsernameImport } from './routes/$username'
 import { Route as IndexImport } from './routes/index'
 import { Route as SettingsUpdateProfileImport } from './routes/settings.update-profile'
+import { Route as PostsIdImport } from './routes/posts.$id'
 
 // Create/Update Routes
 
@@ -42,6 +43,11 @@ const SettingsUpdateProfileRoute = SettingsUpdateProfileImport.update({
   getParentRoute: () => SettingsRoute,
 } as any)
 
+const PostsIdRoute = PostsIdImport.update({
+  path: '/posts/$id',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -66,6 +72,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpImport
       parentRoute: typeof rootRoute
     }
+    '/posts/$id': {
+      preLoaderRoute: typeof PostsIdImport
+      parentRoute: typeof rootRoute
+    }
     '/settings/update-profile': {
       preLoaderRoute: typeof SettingsUpdateProfileImport
       parentRoute: typeof SettingsImport
@@ -81,4 +91,5 @@ export const routeTree = rootRoute.addChildren([
   NewPostRoute,
   SettingsRoute.addChildren([SettingsUpdateProfileRoute]),
   SignUpRoute,
+  PostsIdRoute,
 ])

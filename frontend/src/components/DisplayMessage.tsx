@@ -19,6 +19,6 @@ export const DisplayMessage = ({ icon, title, body }: DisplayMessageProps) => (
 
       <h2 className="text-2xl font-semibold">{title}</h2>
     </div>
-    <div>{body}</div>
+    <div className="text-center px-8">{body}</div>
   </div>
 );

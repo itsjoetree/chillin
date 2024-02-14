@@ -1,4 +1,4 @@
-import { date, integer, pgTable, serial } from "drizzle-orm/pg-core";
+import { date, integer, pgTable, serial, unique } from "drizzle-orm/pg-core";
 import { profile } from "./profile";
 
 export const followRelationship = pgTable("follow_relationships", {
@@ -6,4 +6,6 @@ export const followRelationship = pgTable("follow_relationships", {
   followeeId: integer("followee_id").references(() => profile.id, { onDelete: "cascade" }).notNull(),
   followerId: integer("follower_id").references(() => profile.id, { onDelete: "cascade" }).notNull(),
   updatedAt: date("updated_at")
-});
+}, (t) => ({
+  uniqueFollowRelationship: unique().on(t.followeeId, t.followerId)
+}));

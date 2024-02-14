@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { boolean, date, integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { profile } from "./profile";
 import { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { type Comment } from "../schema/comment";
 
 export const post = pgTable("posts", {
   id: serial("id").primaryKey(),
@@ -13,7 +12,16 @@ export const post = pgTable("posts", {
   seen: boolean("seen").default(false)
 });
 
-export type Post = InferSelectModel<typeof post> & { likes: number; commentCount: number; comments?: Comment[]; likedByViewer?: boolean };
+export type Post = InferSelectModel<typeof post> & {
+  likes: number;
+  commentCount: number;
+  likedByViewer?: boolean;
+  author?: {
+    username: string | null;
+    avatarUrl: string | null;
+  } | null;
+};
+
 export type PostRequestBody = Omit<InferInsertModel<typeof post>, "authorId">;
 
 export const postSchema = z.object({

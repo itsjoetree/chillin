@@ -1,16 +1,17 @@
 import { FeedCard } from "@/components/FeedCard";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/useToast";
 import { clientApi, getHeaders } from "@/main";
 import { EnvelopeSlashFill, VectorPen } from "react-bootstrap-icons";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "react-query";
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { useQuery } from "@tanstack/react-query";
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DisplayMessage } from "@/components/DisplayMessage";
 import { SignIn } from "../sections/auth/SignIn";
 import { Container } from "@/components/Container";
 import { Logo } from "@/components/Logo";
 import { CenteredLoading } from "@/components/Loading";
+import { useDeletePostMutation } from "@/sections/post/useDeletePostMutation";
+import { useLikePostMutation } from "@/sections/post/useLikePostMutation";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -27,17 +28,27 @@ const UnauthView = () => {
 };
 
 const AuthenticatedView = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation("post");
-  const { toast } = useToast();
-  const { data: posts, isLoading } = useQuery("home-feed", async ()  => {
-    const headers = await getHeaders();
+  const { profile } = useAuth();
+  const deletePost = useDeletePostMutation();
 
-    const resp = await clientApi.api.feed.get({
-      $headers: headers
-    });
-
-    return resp.data;
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ["post", "feed"],
+    queryFn: async ()  => {
+      const headers = await getHeaders();
+  
+      const resp = await clientApi.api.feed.get({
+        $headers: headers
+      });
+  
+      return resp.data;
+    }
   });
+
+  const likePostMutation = useLikePostMutation();
+
+  // const likePost = useLikePostInListMutation(["post", "feed"]);
 
   if (isLoading) {
     return <CenteredLoading />;
@@ -46,23 +57,29 @@ const AuthenticatedView = () => {
   return (<div>
     {(posts && Array.isArray(posts) && posts.length > 0) ? posts?.map((post) => (<FeedCard
       key={post.id}
-      onDelete={() => toast({
-        title: t("deletedTitle", { ns: "post" }),
-        description: t("deletedDescription", { ns: "post" })
-      })}
-      username="username"
+      username={post.author?.username ?? ""}
       avatarUrl=""
       post={post}
-      onLike={() => console.log("liked post")}
-      onClickComments={() => console.log("clicked comments")}
+      viewerLiked={(
+        likePostMutation.isPending && likePostMutation.variables === post.id.toString()) 
+          ? !post.likedByViewer : post.likedByViewer
+      }
+      onLike={async () => await likePostMutation.mutateAsync(post.id.toString())}
+      onDelete={post.authorId === profile?.id ? (async () => await deletePost.mutateAsync(post.id.toString())) : undefined}
+      onClickComments={() => navigate({
+        to: "/posts/$id",
+        params: {
+          id: post.id.toString()
+        }
+      })}
     />)) : (<DisplayMessage
       icon={EnvelopeSlashFill}
       title={t("noPostsTitle", { ns: "feed" })}
       body={t("noPostsDescription", { ns: "feed" })}
     />
   )} 
-    <Link to={"/new-post"} className="absolute right-2 bottom-5 rounded-full border-2 border-purple-200 p-2">
-      <VectorPen className="h-5 w-5" />
+    <Link to={"/new-post"} className="absolute right-2 bottom-5 rounded-full border-2 border-purple-200 p-2.5">
+      <VectorPen className="h-6 w-6" />
     </Link>
   </div>)
 };

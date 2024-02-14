@@ -1,7 +1,7 @@
 import Elysia from "elysia";
-import { formSchema as signInSchema } from "../models/SignInRequest";
-import { formSchema as signUpSchema } from "../models/SignUpRequest";
-import { AuthToken } from "../models/AuthToken";
+import { formSchema as signInSchema } from "../models/signInRequest";
+import { formSchema as signUpSchema } from "../models/signUpRequest";
+import { AuthToken } from "../types";
 import { profile } from "../schema/profile";
 import { eq } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";

@@ -9,6 +9,7 @@ import { posts } from "../controllers/posts";
 import { profiles } from "../controllers/profiles";
 import { feeds } from "../controllers/feeds";
 import postgres from "postgres";
+import { comments } from "../controllers/comments";
 
 const connectionString = process.env.DATABASE_URL!;
 const client = postgres(connectionString, { prepare: false });
@@ -33,6 +34,7 @@ const app = new Elysia()
   .use(posts(db, supabase))
   .use(profiles(db, supabase))
   .use(feeds(db, supabase))
+  .use(comments(db, supabase))
   .listen(3000);
 
 export type Api = typeof app;

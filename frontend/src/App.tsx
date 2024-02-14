@@ -26,7 +26,7 @@ const App = () => {
     return <ScreenLoading />;
   }
 
-  return (<RouterProvider router={router} context={{ auth }} />)
+  return (<RouterProvider router={router} context={{ auth }} />);
 }
 
 export default App;

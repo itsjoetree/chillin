@@ -21,16 +21,20 @@ const FeedCard = ({
   viewerLiked,
   onLike,
   onDelete,
+  onClickComments,
   post: { likes, text, commentCount  },
 }: FeedCardProps) => {
 
   return (<Card className={twMerge("flex flex-col gap-4", className)}>
     <UsernameAvatar username={username} avatarUrl={avatarUrl} />
 
-    {text}
+    <p className="whitespace-pre-wrap">
+      {text}
+    </p>
 
     <ActionButtons
       liked={!!viewerLiked}
+      onClickComments={onClickComments}
       onDelete={onDelete}
       onLike={onLike}
       className="self-end lg:self-start"

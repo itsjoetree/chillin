@@ -1,8 +1,8 @@
 import { afterAll, describe, expect, it } from "bun:test";
-import { SignUpRequest } from "../models/SignUpRequest";
+import { SignUpRequest } from "../models/signUpRequest";
 import { profile } from "../schema/profile";
 import { eq } from "drizzle-orm";
-import { SignInRequest } from "../models/SignInRequest";
+import { SignInRequest } from "../models/signInRequest";
 import { adminSupabase, db, testFetch } from "./setup";
 
 const authSignUp: SignUpRequest = {

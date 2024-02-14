@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { SignUpRequest } from "../models/SignUpRequest";
+import { SignUpRequest } from "../models/signUpRequest";
 import { profile } from "../schema/profile";
 import { eq, or } from "drizzle-orm";
 import { adminSupabase, db, supabase, testFetch } from "./setup";

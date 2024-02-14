@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { clientApi, getHeaders } from "@/main";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from '@tanstack/react-router'
 import { PostEditor } from "@/components/PostEditor";
 import { useLocalizeError } from "@/utils/Form";
@@ -47,8 +47,8 @@ export const NewPost = ({ onClose }: { onClose: () => void; }) => {
       to: "/"
     });
 
-    queryClient.invalidateQueries("home-feed");
-    queryClient.invalidateQueries(["posts", profile?.username]);
+    queryClient.invalidateQueries({ queryKey: ["post", "feed"] });
+    queryClient.invalidateQueries({ queryKey: ["post", profile?.username] });
   }
 
   return (<form onSubmit={handleSubmit(onSubmit)}>

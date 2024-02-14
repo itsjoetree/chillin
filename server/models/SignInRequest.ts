@@ -1,4 +1,4 @@
-import { SignUpRequest } from "./SignUpRequest";
+import { SignUpRequest } from "./signUpRequest";
 import { z } from "zod";
 export type SignInRequest = Pick<SignUpRequest, "email" | "password">;
 

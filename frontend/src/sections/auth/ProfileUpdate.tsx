@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/useToast";
 import { useTranslation } from "react-i18next";
 import { ProfileRequestBody, profileSchema } from "server/schema/profile";
 import { clientApi, getHeaders } from "@/main";
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const ProfileUpdate = () => {
   const queryClient = useQueryClient();
@@ -46,8 +46,8 @@ export const ProfileUpdate = () => {
       if (result.error)
         throw new Error();
 
-      await queryClient.invalidateQueries("auth-user");
-      await queryClient.invalidateQueries(["profile", profile?.username])
+      await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+      await queryClient.invalidateQueries({ queryKey: ["profile", profile?.username] })
 
       reset(data);
 

@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { SignUpRequest } from "../models/SignUpRequest";
+import { SignUpRequest } from "../models/signUpRequest";
 import { profile } from "../schema/profile";
 import { and, eq } from "drizzle-orm";
 import { adminSupabase, db, supabase, testFetch } from "./setup";
@@ -8,7 +8,6 @@ import { getProfile } from "../libs/getProfile";
 import { CommentRequestBody, comment } from "../schema/comment";
 import { likedPost } from "../schema/likedPost";
 import { likedComment } from "../schema/likedComment";
-import { replyComment } from "../schema/replyComment";
 
 const testUser: SignUpRequest = {
   email: "posttest@chillin.tech",
@@ -30,6 +29,7 @@ const postBody: PostRequestBody = {
   text: "This is a test post!"
 }
 
+// TODO: Move comment tests to a separate file
 describe("posts", () => {
   beforeAll(async () => {
     const { data } = await supabase.auth.signUp({
@@ -129,9 +129,8 @@ describe("posts", () => {
   });
 
   test("likes post comment", async () => {
-    await testFetch("/api/post/:postId/comments/:commentId/like", {
+    await testFetch("/api/comment/:commentId/like", {
       params: { 
-        postId: post_id.toString(),
         commentId: comment_id.toString()
       },
       method: "POST",
@@ -147,83 +146,9 @@ describe("posts", () => {
     expect(likedRelationship).toBeArrayOfSize(1);
   });
 
-  test("unlikes post comment", async () => {
-    await testFetch("/api/post/:postId/comments/:commentId/unlike", {
-      params: { 
-        postId: post_id.toString(),
-        commentId: comment_id.toString()
-      },
-      method: "DELETE",
-      headers
-    });
-
-    const userProfile = await getProfile(db, supabase, headers);
-    const likedRelationship = await db.select().from(likedComment).where(and(
-      eq(likedComment.commentId, comment_id),
-      eq(likedComment.profileId, userProfile.id)
-    ));
-    
-    expect(likedRelationship).toBeEmpty();
-  });
-
-  test("replies to comment", async () => {
-    const replyBody: CommentRequestBody = {
-      content: "This is a test reply!"
-    };
-
-    await testFetch("/api/post/:postId/comments/:commentId", {
-      params: { 
-        postId: post_id.toString(),
-        commentId: comment_id.toString()
-      },
-      method: "POST",
-      body: JSON.stringify(replyBody),
-      headers
-    });
-
-    const userProfile = await getProfile(db, supabase, headers);
-
-    const replyResult = await db
-      .select()
-      .from(replyComment)
-      .where(eq(replyComment.authorId, userProfile.id));
-
-    reply_comment_id = replyResult[0]?.id;
-
-    expect(replyResult[0]?.content).toBe(replyBody.content);
-  });
-
-  test("deletes reply to comment", async () => {
-    const replyBody: CommentRequestBody = {
-      content: "This is a test reply!"
-    };
-
-    await testFetch("/api/post/:postId/comments/:commentId/:replyId", {
-      params: {
-        replyId: reply_comment_id.toString(),
-        postId: post_id.toString(),
-        commentId: comment_id.toString()
-      },
-      method: "DELETE",
-      body: JSON.stringify(replyBody),
-      headers
-    });
-
-    const userProfile = await getProfile(db, supabase, headers);
-
-    const replyResult = await db.select().from(replyComment)
-      .where(and(
-        eq(replyComment.authorId, userProfile.id),
-        eq(replyComment.commentId, comment_id)
-      ));
-
-    expect(replyResult).toBeEmpty();
-  });
-
   test("deletes comment", async () => {
-    await testFetch("/api/post/:postId/comments/:commentId", {
+    await testFetch("/api/comment/:commentId", {
       params: { 
-        postId: post_id.toString(),
         commentId: comment_id.toString()
       },
       method: "DELETE",

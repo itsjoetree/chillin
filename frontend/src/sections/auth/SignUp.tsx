@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { SignUpRequest, formSchema } from "server/models/SignUpRequest";
+import { SignUpRequest, formSchema } from "server/models/signUpRequest";
 
 export const SignUp = () => {
   const navigate = useNavigate();

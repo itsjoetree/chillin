@@ -1,10 +1,10 @@
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { clientApi, getHeaders, supabase } from "../main";
 import { ReactNode, createContext, useCallback, useMemo } from "react";
 import { Profile } from "server/schema/profile";
-import { AuthToken } from "server/models/AuthToken";
-import { type SignUpRequest } from "server/models/SignUpRequest";
-import { type SignInRequest } from "server/models/SignInRequest";
+import { AuthToken } from "server/types";
+import { type SignUpRequest } from "server/models/signUpRequest";
+import { type SignInRequest } from "server/models/signInRequest";
 
 export type AuthContextType = {
   profile?: Profile;
@@ -26,20 +26,23 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading } = useQuery("auth-user", async (): Promise<Profile | undefined> => {
-    const headers = await getHeaders();
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: async () => {
+      const headers = await getHeaders();
 
-    const profileResponse = await clientApi.api.profile.get({
-      $headers: headers
-    })
+      const profileResponse = await clientApi.api.profile.get({
+        $headers: headers
+      })
 
-    if (profileResponse.error) return;
+      if (profileResponse.error) return;
 
-    return profileResponse.data;
+      return profileResponse.data;
+    }
   });
 
   const refreshProfile = useCallback(async () => {
-    await queryClient.invalidateQueries("auth-user")
+    await queryClient.invalidateQueries({ queryKey: ["auth-user"] })
   }, [queryClient]);
 
   const provider: AuthContextType = useMemo(() => ({

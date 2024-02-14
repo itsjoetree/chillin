@@ -78,6 +78,20 @@
       "when": 1706466554164,
       "tag": "0010_common_nuke",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1706671090553,
+      "tag": "0011_bouncy_wasp",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1707104645996,
+      "tag": "0012_exotic_hawkeye",
+      "breakpoints": true
     }
   ]
 }

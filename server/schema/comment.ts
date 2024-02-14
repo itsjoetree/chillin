@@ -14,9 +14,17 @@ export const comment = pgTable("comments", {
 });
 
 export const commentSchema = z.object({
-  postId: z.number(),
   content: z.string().max(500),
 });
 
-export type Comment = InferSelectModel<typeof comment>;
+export type Comment = InferSelectModel<typeof comment> & {
+  author?: {
+    username: string | null;
+    avatarUrl: string | null;
+  } | null,
+  likedByViewer?: boolean;
+  likeCount?: number;
+  replyCount?: number;
+};
+
 export type CommentRequestBody = Pick<Comment, "content">;
