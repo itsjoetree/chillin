@@ -11,7 +11,7 @@ export const useDeletePostMutation = () => {
   const { t } = useTranslation("post");
   const { toast } = useToast();
 
-  const deletePostMutation = useMutation({
+  return useMutation({
     mutationFn: async (postId: string) => {
       const resp = await clientApi.api.post[postId].delete({
         $headers: await getHeaders()
@@ -37,6 +37,4 @@ export const useDeletePostMutation = () => {
       });
     }
   });
-
-  return deletePostMutation;
 }

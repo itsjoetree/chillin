@@ -37,7 +37,8 @@ const translations = {
       cool: "Cool",
 
       admin: "Admin",
-      adminDescription: "Just vibin, represents a user with admin privileges"
+      adminDescription: "Just vibin, represents a user with admin privileges",
+      serverError: "An error occurred on the server"
     },
     profile: {
       follow: "Follow",
@@ -49,6 +50,8 @@ const translations = {
     feed: {
       noPostsTitle: "Nothing new!",
       noPostsDescription: "No new posts to show, try following some more people!",
+      allCaughtUpTitle: "All caught up!",
+      allCaughtUpDescription: "Nothing new to see here",
     },
     post: {
       newPlaceholder: "What's on your mind?",
@@ -99,7 +102,9 @@ const translations = {
       signUpFooter: "Have you been here before? Let's <0>sign you in!</0>",
 
       signInError: "Invalid combination of username and password",
-      signUpError: "Username is already taken",
+
+      signUpFailed: "Unable to sign up user",
+      ageVerificationFailed: "You must be at least 18 years old to sign up"
     },
     settings: {
       title: "Settings",

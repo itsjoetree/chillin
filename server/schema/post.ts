@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { boolean, integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { profile } from "./profile";
 import { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
@@ -8,8 +8,7 @@ export const post = pgTable("posts", {
   authorId: integer("author_id").references(() => profile.id, { onDelete: "cascade" }).notNull(),
   text: varchar("text", { length: 1000 }).notNull(),
   dateCreated: timestamp("date_created").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  seen: boolean("seen").default(false)
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 export type Post = InferSelectModel<typeof post> & {

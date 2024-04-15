@@ -1,3 +1,4 @@
+import Elysia, { NotFoundError } from "elysia";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { comment, commentSchema } from "../schema/comment";
@@ -6,7 +7,6 @@ import { getProfile } from "../libs/getProfile";
 import { likedComment } from "../schema/likedComment";
 import { post } from "../schema/post";
 import { commentRelationship } from "../schema/commentRelationship";
-import Elysia, { NotFoundError } from "elysia";
 
 export const comments = (db: PostgresJsDatabase, supabase: SupabaseClient) => new Elysia({ prefix: "/api/comment" })
   .post("/:commentId/reply", async (req) => {

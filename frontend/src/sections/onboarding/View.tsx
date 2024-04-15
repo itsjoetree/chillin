@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/useToast";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type SignUpRequest, formSchema } from "server/models/signUpRequest";
+import { type SignUpRequest, formSchema } from "server/models/SignUpRequest";
 import { useLocalizeError } from "@/utils/Form";
 import { FormGroup } from "@/components/FormGroup";
 import { Label } from "@/components/Label";

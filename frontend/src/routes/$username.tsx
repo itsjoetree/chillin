@@ -1,5 +1,5 @@
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clientApi, getHeaders } from "@/main";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/Avatar";
 import { EmojiDizzyFill, EmojiSmileFill, GearFill, QuestionCircleFill, YinYang } from "react-bootstrap-icons";
@@ -10,7 +10,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { CenteredLoading } from "@/components/Loading";
 import { DisplayMessage } from "@/components/DisplayMessage";
 import { Container } from "@/components/Container";
-import { FeedPost } from "@/sections/post/FeedPost";
+import { getPostOnProfileQueryKey } from "@/utils/QueryKeys";
+import { useLikeFeedPost } from "@/mutations/useLikeFeedPost";
+import { FeedCard } from "@/components/FeedCard";
+import { useDeletePostMutation } from "@/sections/post/useDeletePostMutation";
 
 export const Route = createFileRoute("/$username")({
   beforeLoad: async ({ context }) => {
@@ -73,6 +76,7 @@ const useFollow = (username: string, targetUsername: string) => {
 }
 
 function ProfileRoute() {
+  const navigate = useNavigate();
   const { t } = useTranslation("profile");
   const { profile } = useAuth();
   const { username } = Route.useParams();
@@ -86,17 +90,32 @@ function ProfileRoute() {
     }
   });
 
-  const { data: posts, isLoading: loadingPosts } = useQuery({
-    queryKey: ["post", username],
-    queryFn: async () => {
-      const resp = await clientApi.api.post.get({
-        $headers: await getHeaders(),
+  const deletePost = useDeletePostMutation();
+  const likePost = useLikeFeedPost(getPostOnProfileQueryKey(username));
+
+  const {
+    data: posts,
+    isLoading: loadingPosts,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: getPostOnProfileQueryKey(username),
+    queryFn: async ({ pageParam })  => {
+      const headers = await getHeaders();
+  
+      const resp = await clientApi.api.feed.get({
+        $headers: headers,
         $query: {
+          ...(pageParam ? { cursor: pageParam.toString() } : {}),
           username
-        }
+        } 
       });
+  
       return resp.data;
-    }
+    },
+    getNextPageParam: (lastPage) => lastPage?.cursor,
+    initialPageParam: undefined as number | undefined,
   });
 
   if (isLoading) return <CenteredLoading />;
@@ -140,7 +159,7 @@ function ProfileRoute() {
           disabled={isSubmitting}
           onClick={onToggleFollow}
           variant={isFollowing ? "secondary" : "default"}
-          className="block justify-self-end">
+          className="transition-all duration-500 block justify-self-end">
           {isFollowing ? t`following` : t`follow`}
         </Button> : <Link to="/settings">
           <GearFill className="h-5 w-5" />
@@ -175,13 +194,33 @@ function ProfileRoute() {
     </div>
 
     {
-      loadingPosts ? <CenteredLoading /> : (Array.isArray(posts) && posts?.length) ? posts.map((post) => (
-        <FeedPost key={post.id} post={post} />
+      loadingPosts ? <CenteredLoading /> : (posts?.pages?.length) ? posts?.pages?.map((page) => page?.items?.map(pi => 
+        <FeedCard
+          key={pi.id}
+          username={pi?.author?.username ?? ""}
+          avatarUrl={pi?.author?.avatarUrl ?? null}
+          post={pi}
+          viewerLiked={pi?.likedByViewer}
+          onDelete={profile?.username === pi?.author?.username ? (async () => await deletePost.mutateAsync(pi.id?.toString())) : undefined}
+          onLike={async () => await likePost.mutateAsync({ postId: pi?.id, operation: pi?.likedByViewer ? "unlike" : "like" })}
+          onClickComments={() => navigate({
+            to: "/posts/$id",
+            params: {
+              id: pi?.id.toString()
+            }
+          })}
+        />
       )) : <DisplayMessage
         icon={EmojiDizzyFill}
         title={t`noPostsTitle`}
         body={t`noPostsDescription`}
       />
     }
+
+    {(hasNextPage && !isFetchingNextPage) && <button
+      onClick={() => fetchNextPage()}
+      className="text-purple-200">Load More...</button>}
+
+    {isFetchingNextPage && <CenteredLoading />}
   </div>);
 }

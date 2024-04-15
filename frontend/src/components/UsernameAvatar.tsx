@@ -22,7 +22,7 @@ const UsernameAvatar = ({ username, avatarUrl, className, ...props }: UsernameAv
       </Avatar>
     </Link>
     
-    <Link to="/$username" params={{ username: username! }} className="text-xs">
+    <Link to="/$username" params={{ username: username! }} className="text-sm">
       <span>{username}</span>
     </Link>
   </div>)

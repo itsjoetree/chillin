@@ -1,7 +1,7 @@
 import Elysia from "elysia";
-import { Comment, comment, commentSchema } from "../schema/comment";
+import { comment, commentSchema } from "../schema/comment";
 import { getProfile } from "../libs/getProfile";
-import { count, eq, gt, and, exists, SQL, isNull } from "drizzle-orm";
+import { count, eq, gt, and, exists, SQL } from "drizzle-orm";
 import { Post, post, postSchema } from "../schema/post";
 import { likedPost } from "../schema/likedPost";
 import { profile } from "../schema/profile";
@@ -30,7 +30,10 @@ export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
         text: post.text,
         dateCreated: post.dateCreated,
         updatedAt: post.updatedAt,
-        seen: post.seen,
+        author: {
+          username: profile.username,
+          avatarUrl: profile.avatarUrl
+        },
         likedByViewer: exists(
           db.select().from(likedPost).where(and(
             eq(likedPost.postId, post.id),
@@ -39,14 +42,15 @@ export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
         ) as SQL<boolean>
       })
       .from(post)
-      .limit(take);
+      .limit(take)
+      .leftJoin(profile, eq(post.authorId, profile.id));
     
     if (cursor)
       postsQuery.where(and(gt(post.id, cursor), eq(post.authorId, user[0].id)));
     else
       postsQuery.where(eq(post.authorId, user[0].id));
 
-    const postResult = await postsQuery.groupBy(post.id);
+    const postResult = await postsQuery;
 
     const posts: Post[] = await Promise.all(postResult.map(async (pr) => {
       const likes = await db.select({ likes: count(likedPost.id) }).from(likedPost).where(eq(likedPost.postId, pr.id));
@@ -77,7 +81,6 @@ export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
         text: post.text,
         dateCreated: post.dateCreated,
         updatedAt: post.updatedAt,
-        seen: post.seen,
         likedByViewer: exists(
           db.select().from(likedPost).where(and(
             eq(likedPost.postId, post.id),
@@ -121,11 +124,28 @@ export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
       text: body.text
     });
   })
+  // IN PROGRESS / UNSTABLE
   .get("/:postId/comments", async (req): Promise<CommentThread[]> => {
+    // Send and receive a cursor map, to keep track of last comment in each thread.
     const currentProfile = await getProfile(db, supabase, req.headers);
 
     const prepareRepliesRecurse = async (commentId: number, thread: CommentThread | null) => {
-      const commentById = await db.select().from(comment).where(eq(comment.id, commentId));
+      const commentById = await db.select({
+        id: comment.id,
+        postId: comment.postId,
+        authorId: comment.authorId,
+        author: {
+          username: profile.username,
+          avatarUrl: profile.avatarUrl
+        },
+        updatedAt: comment.updatedAt,
+        content: comment.content,
+        dateCreated: comment.dateCreated,
+      })
+      .from(comment)
+      .innerJoin(profile, eq(comment.authorId, profile.id))
+      .where(eq(comment.id, commentId));
+
       const childComment = alias(comment, "child_comment");
 
       const repliesQuery = db.select({
@@ -190,6 +210,7 @@ export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
       if (!thread)
         thread = {
           ...commentById[0],
+          
           replies: []
         };
 
@@ -207,34 +228,22 @@ export const posts = (db: PostgresJsDatabase, supabase: SupabaseClient) => new E
       return thread;
     }
 
-    const cursor = Number(req.query["cursor"]);
-    const postId = Number(req.params["postId"]);
-
+    // Used to retrieve replies to a specific comment rather than post.
+    // const parentCommentId = req.query["parentCommentId"] ? Number(req.query["parentCommentId"]) : null;
+    // const cursorMap: { commentId: string; cursor: string }[] = req.query["cursorMap"] ? JSON.parse(String(req.query["cursorMap"])) : [];
+    // // const postId = Number(req.params["postId"]);
+    
     const commentsQuery = db.select({
       id: comment.id
     })
     .from(comment)
     .leftJoin(commentRelationship, eq(comment.id, commentRelationship.childId))
 
-    if (cursor)
-      commentsQuery.where(
-        and(
-          and(
-            eq(comment.postId, postId),
-            gt(comment.id, cursor),
-            isNull(commentRelationship.parentId)
-          )
-        ));
-    else
-      commentsQuery.where(and(
-        eq(comment.postId, postId),
-        isNull(commentRelationship.parentId)
-      ));
+    // const cursorEntry = cursorMap.find(cm => cm.commentId === String(parentCommentId));
 
+    // TODO: Apply cursor
     const commentsResult = await commentsQuery;
-
     const threads = await Promise.all(commentsResult.map(async (cr) => await prepareRepliesRecurse(cr.id, null)));
-
     return threads;
   })
   .post("/:postId/comments", async (req) => {

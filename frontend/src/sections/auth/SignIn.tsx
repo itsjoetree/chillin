@@ -10,7 +10,7 @@ import { useLocalizeError } from "@/utils/Form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { formSchema, type SignInRequest } from "server/models/signInRequest";
+import { formSchema, type SignInRequest } from "server/models/SignInRequest";
 import { Link } from "@tanstack/react-router";
 
 export const SignIn = () => {

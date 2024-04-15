@@ -27,10 +27,11 @@ type ThreadProps = {
 /**
  * Displays comments and replies recursively
  */
-export const Thread = ({ thread, profileId, shownReplyEditors, onReply, closeReply, setShownReplyEditors }: ThreadProps) => {
+export const Thread = ({ thread, profileId, shownReplyEditors, onReply, closeReply }: ThreadProps) => {
   const showReply = shownReplyEditors?.some((reply) => reply.commentId === thread.id);
 
-  return (<div className="flex flex-col gap-4">
+  return (<div className="relative flex flex-col">
+    <div className="absolute w-[1px] h-full bg-white opacity-25 left-[1.45rem]"></div>
     <PostComment
       comment={{
         id: thread.id,
@@ -42,7 +43,7 @@ export const Thread = ({ thread, profileId, shownReplyEditors, onReply, closeRep
         postId: thread.postId,
         likedByViewer: thread.likedByViewer
       }}
-      setShownReplies={setShownReplyEditors!}
+      // setShownReplies={setShownReplyEditors!}
       shownReplies={shownReplyEditors!}
       profileId={profileId}
     />
@@ -51,10 +52,10 @@ export const Thread = ({ thread, profileId, shownReplyEditors, onReply, closeRep
       <CommentEditor commentId={thread.id} onReply={onReply} onClose={() => closeReply(thread.id)} />
     )}
 
-    {Array.isArray(thread.replies) && thread.replies.length > 0 && thread.replies.map((reply) => (<div className="pl-2" key={reply.id}>
+    {Array.isArray(thread.replies) && thread.replies.length > 0 && thread.replies.map((reply) => (<div className="pl-6" key={reply.id}>
       <Thread
         shownReplyEditors={shownReplyEditors}
-        setShownReplyEditors={setShownReplyEditors}
+        // setShownReplyEditors={setShownReplyEditors}
         closeReply={closeReply}
         thread={reply}
         profileId={profileId}

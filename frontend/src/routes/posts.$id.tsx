@@ -11,11 +11,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
 import { twJoin } from "tailwind-merge";
 import { useDeletePostMutation } from "@/sections/post/useDeletePostMutation";
-import { useLikePostMutation } from "@/sections/post/useLikePostMutation";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CommentEditor } from "@/sections/post/CommentEditor";
 import { Thread } from "@/sections/post/Thread";
 import { useToast } from "@/hooks/useToast";
+import { useLikePost } from "@/mutations/useLikePost";
+import { getPostQueryKey } from "@/utils/QueryKeys";
 
 export type CommentPayload = { content: string };
 
@@ -23,6 +24,11 @@ export const Route = createFileRoute("/posts/$id")({
   component: PostRoute,
 });
 
+/**
+ * Singular post view, shows threads of comments
+ * 
+ * WIP: Thread-like system in progress
+ */
 function PostRoute() {
   const queryClient = useQueryClient();
   const { profile } = useAuth();
@@ -55,10 +61,8 @@ function PostRoute() {
   });
 
   const deletePost = useDeletePostMutation();
-  const likeMutation = useLikePostMutation();
-  const liked = (
-    likeMutation?.isPending && likeMutation.variables.postId === post?.id.toString()
-  ) ? !post?.likedByViewer : post?.likedByViewer;
+  const likeMutation = useLikePost(getPostQueryKey(id!));
+  const liked = post?.likedByViewer;
 
   const onComment = async (postId: number, payload: CommentPayload) => {
     const response = await clientApi.api.post[postId].comments.post({
@@ -81,7 +85,7 @@ function PostRoute() {
     });
 
     await queryClient.invalidateQueries({
-      queryKey: ["post", id]
+      queryKey: ["post"]
     });
 
     setShowAddComment(false);
@@ -146,7 +150,7 @@ function PostRoute() {
           likeCount={post?.likes ?? 0}
           commentsCount={post?.commentCount ?? 0}
           onClickComments={() => setShowAddComment(!showAddComment)}
-          onLike={() => likeMutation.mutateAsync({ postId: post?.id?.toString() ?? "", operation: liked ? "unlike" : "like" })}
+          onLike={() => likeMutation.mutateAsync({ postId: post?.id ?? 0, operation: liked ? "unlike" : "like" })}
           onDelete={post?.authorId === profile?.id ? (async () => await deletePost.mutateAsync(post?.id.toString() ?? "")) : undefined}
         />
       </div>

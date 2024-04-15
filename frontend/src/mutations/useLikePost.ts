@@ -2,29 +2,10 @@ import { clientApi, getHeaders } from "@/main";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Post } from "server/schema/post";
 
-export const useLikePostMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: { postId: string; operation: "like" | "unlike" }) => {
-      const headers = await getHeaders();
-
-      const response = payload?.operation === "unlike" ? await clientApi.api.post[payload.postId].unlike.delete({
-        $headers: headers
-      })
-        : await clientApi.api.post[payload.postId].like.post({
-          $headers: headers
-        });
-
-      if (response.error) throw new Error();
-    },
-    onSuccess: async () => await queryClient.invalidateQueries({ queryKey: ["post"] })
-  })
-};
-
 /**
  * Hook to properly handle toggling a post like.
  */
-export const useTogglePostLike = (queryKey: Array<unknown>) => {
+export const useLikePost = (queryKey: Array<unknown>) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -43,7 +24,7 @@ export const useTogglePostLike = (queryKey: Array<unknown>) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey });
-  
+ 
       // Snapshot the previous value
       const previousPost = queryClient.getQueryData<Post>(queryKey);
 
@@ -56,7 +37,6 @@ export const useTogglePostLike = (queryKey: Array<unknown>) => {
         queryClient.setQueryData<Post>(queryKey, clonedPrev);
       }
       
-      // Return a context with the previous and new todo
       return { previousPost }
     },
     // If the mutation fails, use the context we returned above

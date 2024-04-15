@@ -10,12 +10,12 @@
     "@elysiajs/cors": "^0.8.0",
     "@elysiajs/eden": "^0.8.1",
     "@elysiajs/swagger": "^0.8.3",
-    "@supabase/supabase-js": "^2.39.3",
+    "@supabase/supabase-js": "^2.42.3",
     "date-fns": "^3.3.1",
     "dotenv": "^16.4.1",
     "drizzle-orm": "^0.29.3",
     "elysia": "latest",
-    "postgres": "^3.4.3",
+    "postgres": "^3.4.4",
     "zod": "^3.22.4"
   },
   "devDependencies": {

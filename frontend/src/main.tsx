@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
 });
 
 // export const clientApi = edenTreaty<Api>("http://localhost:3000");
-export const clientApi = edenTreaty<Api>("http://192.168.86.249:5050");
+export const clientApi = edenTreaty<Api>("http://192.168.86.226:5050");
 export const getHeaders = async () => {
   const { data } =  await supabase.auth.getSession();
 

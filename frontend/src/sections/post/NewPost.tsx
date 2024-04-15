@@ -47,8 +47,7 @@ export const NewPost = ({ onClose }: { onClose: () => void; }) => {
       to: "/"
     });
 
-    queryClient.invalidateQueries({ queryKey: ["post", "feed"] });
-    queryClient.invalidateQueries({ queryKey: ["post", profile?.username] });
+    queryClient.invalidateQueries({ queryKey: ["post"] });
   }
 
   return (<form onSubmit={handleSubmit(onSubmit)}>

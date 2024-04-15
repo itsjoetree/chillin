@@ -5,17 +5,15 @@ import { FormGroupContainer } from "@/components/FormGroupContainer";
 import { Input } from "@/components/Input";
 import { Label } from "@/components/Label";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/useToast";
 import { useLocalizeError } from "@/utils/Form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { SignUpRequest, formSchema } from "server/models/signUpRequest";
+import { SignUpRequest, formSchema } from "server/models/SignUpRequest";
 
 export const SignUp = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { t } = useTranslation("auth");
   const { localizeError } = useLocalizeError();
   const { signUp } = useAuth();
@@ -24,20 +22,13 @@ export const SignUp = () => {
   );
 
   const onSubmit = async (data: SignUpRequest) => {
-    try {
-      await signUp({
-        ...data
-      });
+    const success = await signUp({
+      ...data
+    });
 
-      navigate({
-        to: "/"
-      });
-    } catch {
-      toast({
-        title: t`signUp`,
-        description: t`signUpError`,
-      })
-    }
+    if (success) navigate({
+      to: "/"
+    });
   }
 
   return (
