@@ -1,0 +1,2 @@
+ALTER TABLE "follow_relationships" ADD CONSTRAINT "follow_relationships_followee_id_follower_id_unique" UNIQUE("followee_id","follower_id");--> statement-breakpoint
+ALTER TABLE "liked_comment" ADD CONSTRAINT "liked_comment_comment_id_profile_id_unique" UNIQUE("comment_id","profile_id");

@@ -1,20 +1,20 @@
 import { ArrowLeftCircleFill, ImageFill, Trash3Fill } from "react-bootstrap-icons";
-import { User } from "../../../server/models/User";
 import { UsernameAvatar } from "./UsernameAvatar";
 import { SelectedImage } from "../types";
 import { Button } from "./Button";
 import { Textarea } from "./Textarea";
 import { Card } from "./Card";
-import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
+import { Profile } from "server/schema/profile";
 
-type PostEditorProps = Pick<User, "username" | "avatarUrl"> & {
+export type PostEditorProps = Pick<Profile, "username" | "avatarUrl"> & {
   /**
    * Ref to the Textarea component
    */
   ref?: React.Ref<HTMLTextAreaElement>;
+  disableSubmit?: boolean;
   onClose: () => void;
-  onPost: () => void;
+  onInputUpdate?: (text: string) => void;
 }  & ({
   selectedImages: SelectedImage[];
   setImages: (images: SelectedImage[]) => void;
@@ -26,11 +26,11 @@ type PostEditorProps = Pick<User, "username" | "avatarUrl"> & {
 /**
  * Editor for either a new post or a comment
  */
-const PostEditor = forwardRef<HTMLTextAreaElement, PostEditorProps>(({ username, avatarUrl, onClose, onPost, ...props }, ref) => {
+const PostEditor = ({ username, avatarUrl, onClose, onInputUpdate, disableSubmit, ...props }: PostEditorProps) => {
   const { t } = useTranslation("post");
   const showImageEditor = "selectedImages" in props && "setImages" in props;
 
-  return (<div className="px-2 pt-5 pb-2">
+  return (<div className="flex flex-col gap-4 pb-2">
     <UsernameAvatar
       username={username}
       avatarUrl={avatarUrl}
@@ -60,14 +60,14 @@ const PostEditor = forwardRef<HTMLTextAreaElement, PostEditorProps>(({ username,
 
       <div className="flex flex-col w-full gap-4 py-2 pl-8 pr-4">
         <Textarea
-          ref={ref}
+          onInput={(e) => onInputUpdate?.(e.currentTarget.value)}
           autoFocus
           placeholder={t`newPlaceholder`}
           className="resize-none"
           rows={5}
         />
 
-        <Button onClick={onPost} className="md:self-start">{t`post`}</Button>
+        <Button disabled={disableSubmit} type="submit" className="md:self-start">{t`post`}</Button>
       </div>
     </div>
 
@@ -89,7 +89,7 @@ const PostEditor = forwardRef<HTMLTextAreaElement, PostEditorProps>(({ username,
       </div>
     </div>}
   </div>)
-});
+}
 
 PostEditor.displayName = "PostEditor";
 

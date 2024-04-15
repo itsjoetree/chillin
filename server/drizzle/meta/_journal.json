@@ -1,0 +1,104 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1705890193165,
+      "tag": "0000_worthless_speedball",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1705893062661,
+      "tag": "0001_workable_the_twelve",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1705967215906,
+      "tag": "0002_lean_lady_bullseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1705973941899,
+      "tag": "0003_solid_dragon_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1705974039574,
+      "tag": "0004_mature_lyja",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1706229456501,
+      "tag": "0005_wandering_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1706298895215,
+      "tag": "0006_mean_ultimates",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1706314661204,
+      "tag": "0007_sudden_liz_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1706391990305,
+      "tag": "0008_heavy_dust",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1706456470458,
+      "tag": "0009_happy_carmella_unuscione",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1706466554164,
+      "tag": "0010_common_nuke",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1706671090553,
+      "tag": "0011_bouncy_wasp",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1707104645996,
+      "tag": "0012_exotic_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1708373918297,
+      "tag": "0013_elite_lionheart",
+      "breakpoints": true
+    }
+  ]
+}

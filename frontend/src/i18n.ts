@@ -8,7 +8,7 @@ const translations = {
       minLength: "{{field}} must be at least {{length}} characters",
       maxLength: "{{field}} must be at most {{length}} characters",
       required: "{{field}} is required",
-      invalid: "{{field}} is invalid"
+      invalid: "{{field}} is invalid",
     },
     common: {
       username: "Username",
@@ -26,6 +26,9 @@ const translations = {
       delete: "Delete",
       remove: "Remove",
       getStarted: "Get Started",
+      signIn: "Sign In",
+      signUp: "Sign Up",
+      saveChanges: "Save Changes",
 
       // Variants
       chillin: "Chillin'",
@@ -34,12 +37,21 @@ const translations = {
       cool: "Cool",
 
       admin: "Admin",
-      adminDescription: "Just vibin, represents a user with admin privileges"
+      adminDescription: "Just vibin, represents a user with admin privileges",
+      serverError: "An error occurred on the server"
     },
     profile: {
       follow: "Follow",
       followers: "Followers",
-      following: "Following"
+      following: "Following",
+      noPostsTitle: "Coast is clear?",
+      noPostsDescription: "This user doesn't have any posts yet.",
+    },
+    feed: {
+      noPostsTitle: "Nothing new!",
+      noPostsDescription: "No new posts to show, try following some more people!",
+      allCaughtUpTitle: "All caught up!",
+      allCaughtUpDescription: "Nothing new to see here",
     },
     post: {
       newPlaceholder: "What's on your mind?",
@@ -53,7 +65,22 @@ const translations = {
       deleteTitle: "Delete post?",
       deleteDescription: "Are you sure you want to delete this post? This action cannot be undone.",
       deletedTitle: "Post deleted",
-      deletedDescription: "Your post has been deleted"
+      deletedDescription: "Your post has been deleted",
+      deleteFailureTitle: "Unable to delete post",
+      deleteFailure: "Unable to delete post",
+      postSuccess: "Post created successfully",
+      postFailure: "Unable to create post",
+      likeFailure: "Like failed",
+      likeFailureDescription: "There was an error while trying to update your like status",
+      noCommentsTitle: "No comments",
+      noCommentsDescription: "This post doesn't have any comments yet",
+      newCommentTitle: "New comment",
+      newCommentSuccess: "Comment successfully created",
+      newCommentFailure: "Unable to create comment",
+      deleteCommentFailureTitle: "Remove Comment",
+      deleteCommentFailure: "Unable to remove comment",
+      deletedCommentTitle: "Comment removed",
+      deletedCommentDescription: "Comment has been removed",
     },
     onboarding: {
       welcomeTitle: "Welcome to <0>chillin!</0>",
@@ -69,6 +96,24 @@ const translations = {
 
       userInfoTitle: "User information",
       userInfoDescription: "Enter your user information to continue"
+    },
+    auth: {
+      signInFooter: "Are you new here? Let's <0>sign you up!</0>",
+      signUpFooter: "Have you been here before? Let's <0>sign you in!</0>",
+
+      signInError: "Invalid combination of username and password",
+
+      signUpFailed: "Unable to sign up user",
+      ageVerificationFailed: "You must be at least 18 years old to sign up"
+    },
+    settings: {
+      title: "Settings",
+      profile: "Profile",
+      updateProfile: "Update Profile",
+      changePassword: "Change Password",
+      logoutTitle: "Logout?",
+      logoutConfirm: "Are you sure you want to logout?",
+      profileUpdateSuccess: "Profile updated successfully",
     }
   }
 }
